@@ -1,0 +1,90 @@
+<!doctype html>
+<html class="no-js" lang="sv">
+<head>
+  <meta charset="utf-8">
+
+  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+       Remove this if you use the .htaccess -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>UppCon XI - Cosplaytävling Kontrollpanel</title>
+  <meta name="description" content="UppCon:11 Cosplay">
+  <meta name="author" content="Daniel Mauno Pettersson">
+
+
+  <link rel="stylesheet" href="css/style.css?v=2">
+
+  <script src="js/libs/modernizr-1.7.min.js"></script>
+  <script src="js/mylibs/participants.js"></script>
+  <script src="js/libs/jquery-1.5.1.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    function send () {
+        var n = $('#number').val();
+        console.log(n);
+        window.opener.change(n);
+    }
+    
+    function cosplayString (cosplay) {
+        return cosplay.user.firstname + 
+               ' ' + cosplay.user.lastname +
+               ' som ' + cosplay.character + 
+               " från " + cosplay.series;
+    }
+    
+    $(document).ready(function(){
+       $('input[type=button]').live('click', function(){
+           var current = window.opener.$participants[window.opener._pos].cosplay;
+           
+           $('#current').html(cosplayString(current));
+               
+           var next = window.opener.$participants[window.opener._pos + 1] ? window.opener.$participants[window.opener._pos + 1].cosplay : '';
+           if (next != '') {
+               $('#next').html(cosplayString(next));
+           } else {
+               $('#next').html('Ingen nästa cosplay.');
+           }
+           
+           
+           
+       });
+       $('input[type=button]').first().trigger('click');
+       
+        
+    });
+    
+  </script>
+  <style type="text/css" media="screen">
+    
+  </style>
+ 
+</head>
+
+<body>
+    <table border="0" cellspacing="5" cellpadding="5" width="100%">
+        <tr>
+            <td colspan="3">
+                Gå till nummer: 
+                <input id="number" type="text" value="" onfocus="this.value = ''" />
+                <input type="button" onclick="send(); return false;" value="Visa" />
+            </td>
+        </tr>
+        
+        <tr>
+            Nu visas: <div id="current"><i>Info visas här...</i></div>
+            Nästa: <div id="next"><i>Info visas här...</i></div>
+        </tr>
+        
+        <tr>
+            <td><input type="button" onclick="window.opener.prev(); return false;" value="&laquo; Bakåt" /></td>
+            <td> </td>
+            <td><input type="button" onclick="window.opener.next(); return false;" value="Framåt &raquo;" /></td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript" charset="utf-8">
+        console.log(window.opener._pos);
+    </script>
+
+</body>
+</html>

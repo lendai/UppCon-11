@@ -1,0 +1,89 @@
+<!doctype html>
+<html class="no-js" lang="sv">
+<head>
+  <meta charset="utf-8">
+
+  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+       Remove this if you use the .htaccess -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>UppCon XI - Cosplaytävling</title>
+  <meta name="description" content="UppCon:11 Cosplay">
+  <meta name="author" content="Daniel Mauno Pettersson">
+
+
+  <link rel="stylesheet" href="css/style.css?v=2">
+
+  <script src="js/libs/modernizr-1.7.min.js"></script>
+  <script src="js/mylibs/participants.js"></script>
+  <script src="js/libs/jquery-1.5.1.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/script.js"></script>
+  <style type="text/css" media="screen">
+    ::-webkit-scrollbar { 
+    width: 15px; 
+    background-color: #00b7c5;
+    }
+
+    ::-webkit-scrollbar-thumb {
+    background: #696969;
+    -webkit-border-radius: 5px;
+    height: 50px;
+    display:none;
+    }
+
+    ::-webkit-scrollbar-track {
+    background-color: inherit;
+    }
+  </style>
+</head>
+
+<body>
+    <div id="help">
+        <h1>UppConXI - Cosplaytävlingen</h1>
+        <h2>Installation:</h2>
+        <p>Uppdatera informationen i js/mylibs/participants.js med data från http://11.uppcon.se/admin/cosplay.json.
+        </p>
+        <h2>Status:</h2>
+        <p>
+            Webbläsare: <script type="text/javascript" charset="utf-8">
+                if($.browser.webkit){
+                    document.write("OK! (Safari eller Chrome)");
+                } else {
+                    document.write("Felaktig webbläsare. Använd Google Chrome eller Safari.")
+                }
+            </script><br />
+            Cosplayare: <script type="text/javascript" charset="utf-8">
+                document.write(window.opener.$participants.length + ' st');
+            </script>
+        </p>
+        <br/>
+        
+        <a href="#" id="start" class="btn">Starta</a>
+    </div>
+  <div id="container" style="display:none">
+    <img src="img/ash.jpg" />
+    <div id="content">
+        <header>
+            UClogga
+        </header>
+        <div id="main" role="main">
+            <span id="name">Hanna S</span> <em>som</em>
+            <strong id="char">Ash Ketchup</strong>
+            <em>från</em> <span id="origin">Pants and Smoking</span>
+        </div>
+        <footer>
+            För att rösta på detta bidrag, skicka<br />ett sms med texten
+            <div class="smsinfo">
+                 <strong id="smscode">UC VOTE 420</strong> <em>till</em> <strong>72 500</strong>
+            </div>
+            <span>Varje SMS kostar 1 kr</span>
+        </footer>
+    </div>
+    
+  </div> <!--! end of #container -->
+
+
+
+</body>
+</html>
