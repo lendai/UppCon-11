@@ -6,6 +6,7 @@ function change (n) {
 
 	var all = $('#name, #char, #origin, #smscode');
 	var _c = $participants[n].cosplay;
+	_pos = n;
 	
 	all.animate({opacity: 0}, 100, function(){
 	
@@ -14,7 +15,7 @@ function change (n) {
 		$('#char').html(_c.character);
 		$('#origin').html(_c.series);
 		$('#smscode').html('UC VOTE '+_c.id);
-		all.animate({opacity: 1}, 300);
+		all.animate({opacity: 1}, 220);
 	});
 }
 function next () {
