@@ -4,5 +4,16 @@ runtime: python
 api_version: 1
 
 handlers:
-- url: .*
+- url: /(vote|poll.*|option.*)
   script: main.py
+
+- url: /
+  static_files: public/index.html
+  upload: public/index.html
+
+- url: /new_poll
+  static_files: public/new_poll.html
+  upload: public/new_poll.html
+
+- url: /
+  static_dir: public
