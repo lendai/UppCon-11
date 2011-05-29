@@ -14,18 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import os
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
-
+from google.appengine.ext.webapp import template
+from django.utils import simplejson as json
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write('Hello world!')
-
+        template_values = {
+                    'greetings': 'grattis',
+                    'url': "voteid",
+                    'url_linktext': 'url_linktext',
+                }
+        path = os.path.join(os.path.dirname(__file__), 'index.html')
+        self.response.out.write(template.render(path, template_values))
+    
 
 class AdminHandler(webapp.RequestHandler):
     def get(self):
         self.response.out.write('admin lol')
+
+
 
 
 class VoteHandler(webapp.RequestHandler):
@@ -36,7 +46,7 @@ class VoteHandler(webapp.RequestHandler):
 def main():
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/vote', VoteHandler),
-                                          ('/admin', AdminHandler)]
+                                          ('/admin', AdminHandler)],
                                          debug=True)
     util.run_wsgi_app(application)
 
