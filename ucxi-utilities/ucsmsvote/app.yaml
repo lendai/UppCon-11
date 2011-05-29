@@ -4,7 +4,13 @@ runtime: python
 api_version: 1
 
 handlers:
-- url: /(vote|poll.*|option.*)
+- url: /vote
+  script: main.py
+
+- url: /poll.*
+  script: main.py
+
+- url: /option.*
   script: main.py
 
 - url: /

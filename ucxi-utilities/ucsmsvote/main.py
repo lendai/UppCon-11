@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -21,10 +22,51 @@ class Option(db.Model):
     createdAt   = db.DateTimeProperty()
 
 
+class Vote(db.Model):
+    phoneNumber = db.StringProperty(required=True)
+    createdAt   = db.DateTimeProperty()
+
+
+
 
 class VoteHandler(webapp.RequestHandler):
     def post(self):
-        self.response.out.write('lax')
+        self.response.headers['Content-Type'] = 'text/plain; charset="iso-8859-1"'
+
+        phone       = self.request.get('msisdn')
+        msg         = self.request.get('message')
+        words       = msg.split()
+
+        if len(words) < 4:
+            self.response.out.write('Du, nu fattar jag inte alls vad du menar!')
+            return
+
+        shortname   = words[2]
+        oid         = words[3]
+
+        poll = db.get(db.Key.from_path('Poll', shortname))
+        if not poll:
+            reply = u'Hur stavar du egentligen? Jag hittar ingen tävling som kallas ' + shortname
+            self.response.out.write(reply.encode('iso-8859-1'))
+            return
+
+        option = db.get(db.Key.from_path('Poll', shortname, 'Option', oid))
+        if not option:
+            reply = u'Hördu, det verkar inte finnas nåt bidrag som kallas ' + oid
+            self.response.out.write(reply.encode('iso-8859-1'))
+            return
+
+        vote = Vote.all().ancestor(poll).filter('phoneNumber =', phone)
+        if vote:
+            reply = u'Nä du, mig lurar du inte! Du har redan röstat i den här tävlingen!'
+            self.response.out.write(reply.encode('iso-8859-1'))
+            return
+
+        vote = Vote(parent=option, phoneNumber=phone, createdAt=datetime.datetime.now())
+
+        reply = u'Tack för din röst på ' + option.name + u' i ' + poll.name + u'!'
+        self.response.out.write(reply.encode('iso-8859-1'))
+
 
 
 class PollHandler(webapp.RequestHandler):
@@ -71,16 +113,20 @@ class PollHandler(webapp.RequestHandler):
 class OptionHandler(webapp.RequestHandler):
     def get(self):
         shortname   = self.request.get('shortname')
+        sort        = self.request.get('sortbyvotes')
         polls       = Poll.all()
         if shortname:
             polls.ancestor(db.Key.from_path('Poll', shortname))
 
         out = {}
         for p in polls:
-            options = {}
-            for o in Option.all().ancestor(p.key()):
-                options[o.oid] = {'name': o.name}
-            out[p.key().name()]
+            options = []
+            oq      = Option.all().ancestor(p).order('oid')
+            for o in oq:
+                votes = Vote.all().ancestor(o).count()
+                options.append({'id': o.oid, 'name': o.name, 'votes': votes})
+
+            out[p.key().name()] = options if (not sort or sort == '0') else sorted(options, lambda opts: opts['votes'])
 
         self.response.out.write(json.dumps(out))
 
@@ -96,7 +142,7 @@ class OptionHandler(webapp.RequestHandler):
             self.response.set_status(404)
             return
 
-        option = Option(oid=oid, name=name, parent=poll.key())
+        option = Option(oid=oid, name=name, createdAt=datetime.datetime.now(), parent=poll.key())
         option.put()
 
         self.response.out.write(json.dumps({'status': 'ok'}))
