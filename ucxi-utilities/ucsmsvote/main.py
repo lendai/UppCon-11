@@ -41,28 +41,29 @@ class VoteHandler(webapp.RequestHandler):
             self.response.out.write('Du, nu fattar jag inte alls vad du menar!')
             return
 
-        shortname   = words[2]
-        oid         = words[3]
+        shortname   = words[2].lower()
+        oid         = words[3].lower()
 
         poll = db.get(db.Key.from_path('Poll', shortname))
         if not poll:
-            reply = u'Hur stavar du egentligen? Jag hittar ingen tävling som kallas ' + shortname
+            reply = u'Jag tror du är på fel konvent. Hittar ingen tävling som kallas ' + shortname
             self.response.out.write(reply.encode('iso-8859-1'))
             return
 
-        option = db.get(db.Key.from_path('Poll', shortname, 'Option', oid))
+        option = Option.all().ancestor(poll).filter('oid =', oid).get()
         if not option:
             reply = u'Hördu, det verkar inte finnas nåt bidrag som kallas ' + oid
             self.response.out.write(reply.encode('iso-8859-1'))
             return
 
-        vote = Vote.all().ancestor(poll).filter('phoneNumber =', phone)
+        vote = Vote.all().ancestor(poll).filter('phoneNumber =', phone).get()
         if vote:
             reply = u'Nä du, mig lurar du inte! Du har redan röstat i den här tävlingen!'
             self.response.out.write(reply.encode('iso-8859-1'))
             return
 
         vote = Vote(parent=option, phoneNumber=phone, createdAt=datetime.datetime.now())
+        vote.put()
 
         reply = u'Tack för din röst på ' + option.name + u' i ' + poll.name + u'!'
         self.response.out.write(reply.encode('iso-8859-1'))
@@ -80,7 +81,7 @@ class PollHandler(webapp.RequestHandler):
 
     def post(self):
         name        = self.request.get('name')
-        shortname   = self.request.get('shortname')
+        shortname   = self.request.get('shortname').lower()
 
         if name == '' or shortname == '':
             self.response.out.write(json.dumps({'status': "invalid name or shortname"}))
@@ -112,7 +113,7 @@ class PollHandler(webapp.RequestHandler):
 
 class OptionHandler(webapp.RequestHandler):
     def get(self):
-        shortname   = self.request.get('shortname')
+        shortname   = self.request.get('shortname').lower()
         sort        = self.request.get('sortbyvotes')
         polls       = Poll.all()
         if shortname:
@@ -132,8 +133,8 @@ class OptionHandler(webapp.RequestHandler):
 
 
     def post(self):
-        shortname   = self.request.get('shortname')
-        oid         = self.request.get('id')
+        shortname   = self.request.get('shortname').lower()
+        oid         = self.request.get('id').lower()
         name        = self.request.get('name')
 
         poll = db.get(db.Key.from_path('Poll', shortname))
