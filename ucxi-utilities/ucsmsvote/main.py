@@ -29,6 +29,8 @@ class Vote(db.Model):
 
 
 
+
+
 class VoteHandler(webapp.RequestHandler):
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain; charset="iso-8859-1"'

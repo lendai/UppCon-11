@@ -17,5 +17,9 @@ handlers:
   static_files: public/index.html
   upload: public/index.html
 
+- url: /new_poll
+  static_files: public/new_poll.html
+  upload: public/new_poll.html
+
 - url: /
   static_dir: public

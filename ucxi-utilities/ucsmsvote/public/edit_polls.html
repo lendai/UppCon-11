@@ -1,0 +1,35 @@
+<article class="module full_width">
+<header><h3 class="tabs_involved">All polls</h3>
+</header>
+	<table class="tablesorter" cellspacing="0"> 
+	<thead> 
+		<tr> 
+			<th></th> 
+			<th>Name</th> 
+			<th>Shortcode</th> 
+			<th>Actions</th> 
+		</tr> 
+	</thead> 
+	<tbody id="competitions"> 
+
+	</tbody> 
+	</table>
+</article><!-- end of content manager article -->
+
+
+
+<script type="text/javascript" charset="utf-8">
+$.get('/poll', function(d){
+   $.each(d, function(i, n){
+       var row = $('<tr>');
+       row.append('<td><input type="checkbox"></td>');
+       row.append('<td>'+n.name+'</td>');
+       row.append('<td>'+n.shortname+'</td>');
+       row.append('<td><input type="image" src="images/icn_edit.png" title="Edit"><input type="image" src="images/icn_trash.png" class="poll-'+n.shortname+'" onclick="deletePoll(\''+n.shortname+'\'); return false;" title="Trash"></td>');
+       $('#competitions').append(row)
+       
+   });
+   
+},'json');
+
+</script>
