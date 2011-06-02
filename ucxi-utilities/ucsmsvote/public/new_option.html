@@ -1,0 +1,51 @@
+<form id="create-option">
+<article class="module width_full">
+	<header><h3>Add new Option (player, cosplayer, amv or whatever)</h3></header>
+		<div class="module_content">
+		    Option ID doesn't have to be numeric, but individual for each Option.<br>
+		    The SMS will look like:<br>
+		    <pre>UC VOTE Shortname OptionID</pre><br>
+		    And the response will be like:<br>
+		    <pre>Tack för din röst på <strong>Option Name</strong> i <strong>Pollname</strong></pre>
+		</div>
+		<div class="module_content">
+				<fieldset style="width:48%; float:left; margin-right: 3%;"> <!-- to make two field float next to one another, adjust values accordingly -->
+					<label for="shortname">Poll</label>
+                    <select name="shortname" id="shortname" style="width:92%;">                    
+                    </select>
+				</fieldset>
+				<fieldset style="width:48%; float:left;"> <!-- to make two field float next to one another, adjust values accordingly -->
+					<label for="shortname">Option ID</label>
+					<input type="text" name="id" id="id" style="width:92%;"><br><br>
+				</fieldset><div class="clear"></div>
+		</div>
+		<div class="module_content">
+			<fieldset>
+				<label for="name">Option Name</label>
+                <input type="text" name="name" id="name" style="width:92%;" placeholder="The name of the Option">                    
+			</fieldset>
+		</div>
+		
+	<footer>
+		<div class="submit_link">
+			<input type="submit" value="Create" class="alt_btn">
+<!--			<input type="submit" value="Reset"> -->
+		</div>
+	</footer>
+</article>
+</form>
+
+
+
+<script type="text/javascript" charset="utf-8">
+$.get('/poll', function(d){
+   $.each(d, function(i,n){
+       $('#shortname').append($('<option>'+n.name+'</option>').attr('value', n.shortname));
+}); },'json');
+
+$('#create-option').bind('submit', function(){
+   $('h4.notice').remove();
+   $.post('/option', $(this).serialize(), ajaxResponse, 'json');
+   return false;
+});
+</script>
