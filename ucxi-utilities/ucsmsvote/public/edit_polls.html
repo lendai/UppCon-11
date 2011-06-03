@@ -1,18 +1,18 @@
 <article class="module full_width">
 <header><h3 class="tabs_involved">All polls</h3>
 </header>
-	<table class="tablesorter" cellspacing="0"> 
-	<thead> 
-		<tr> 
-			<th></th> 
-			<th>Name</th> 
-			<th>Shortcode</th> 
-			<th>Actions</th> 
-		</tr> 
-	</thead> 
-	<tbody id="competitions"> 
+	<table class="tablesorter" cellspacing="0">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Shortcode</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody id="competitions">
 
-	</tbody> 
+	</tbody>
 	</table>
 </article><!-- end of content manager article -->
 
@@ -26,10 +26,11 @@ $.get('/poll', function(d){
        row.append('<td>'+n.name+'</td>');
        row.append('<td>'+n.shortname+'</td>');
        row.append('<td><input type="image" src="images/icn_edit.png" title="Edit"><input type="image" src="images/icn_trash.png" class="poll-'+n.shortname+'" onclick="deletePoll(\''+n.shortname+'\'); return false;" title="Trash"></td>');
+       row.append('</tr>')
        $('#competitions').append(row)
-       
+
    });
-   
+
 },'json');
 
 </script>

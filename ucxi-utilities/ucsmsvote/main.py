@@ -145,6 +145,12 @@ class OptionHandler(webapp.RequestHandler):
             self.response.set_status(404)
             return
 
+        option = Option.all().ancestor(poll).filter('oid =', oid).get()
+        if option:
+            self.response.out.write(json.dumps({'status': 'id already exists for this poll'}))
+            self.response.set_status(403)
+            return
+
         option = Option(oid=oid, name=name, createdAt=datetime.datetime.now(), parent=poll.key())
         option.put()
 

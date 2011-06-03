@@ -1,7 +1,39 @@
+<article class="module full_width">
+<header><h3 class="tabs_involved">All options</h3>
+</header>
+	<table class="tablesorter" cellspacing="0">
+	<thead>
+		<tr>
+		    <th></th>
+			<th>Competition shortname</th>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Votes</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody id="options">
+
+	</tbody>
+	</table>
+</article><!-- end of content manager article -->
+
+
+
 <script type="text/javascript" charset="utf-8">
 $.get('/option', function(d){
     $.each(d, function(i, n){
-        console.log(n);
+        $.each(n, function(ii, nn) {
+            var row = $('<tr>');
+            row.append('<td><input type="checkbox"></td>');
+            row.append('<td>'+i+'</td>');
+            row.append('<td>'+nn.id+'</td>');
+            row.append('<td>'+nn.name+'</td>');
+            row.append('<td>'+nn.votes+'</td>');
+            row.append('<td><input type="image" src="images/icn_edit.png" title="Edit" /><input type="image" src="images/icn_trash.png" class="option-'+i+'-'+nn.id+'" onclick="deleteOption(\''+i+'\',\''+nn.id+'\'); return false;" title="Trash"></td>');
+            row.append('</tr>');
+            $('#options').append(row);
+        })
     });
 }, 'json');
 </script>
