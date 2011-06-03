@@ -46,6 +46,9 @@ class VoteHandler(webapp.RequestHandler):
         shortname   = words[2].lower()
         oid         = words[3].lower()
 
+        if oid.isdigit():
+            oid = str(int(oid));
+
         poll = db.get(db.Key.from_path('Poll', shortname))
         if not poll:
             reply = u'Jag tror du är på fel konvent. Hittar ingen tävling som kallas ' + shortname
