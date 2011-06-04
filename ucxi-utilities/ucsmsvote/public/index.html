@@ -19,6 +19,7 @@
 	<script src="js/hideshow.js" type="text/javascript"></script>
 	<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
     <script src="js/global.js" type="text/javascript"></script>
+    <script src="js/optionimport.js" type="text/javascript"></script>
 	<script type="text/javascript" src="js/jquery.equalHeight.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function()
@@ -99,6 +100,7 @@
 		<ul class="toggle">
 			<li class="icn_settings"><a href="#">Options</a></li>
 			<li class="icn_jump_back"><a href="#">Logout</a></li>
+			<li class="icn_cosplay_import"><a href="#" onclick="if (confirm('Säker på att du vill importera?')) {importCosplayers();} return false;">Press this here button to import cosplayers</a></li>
 		</ul>
 
 		<footer>

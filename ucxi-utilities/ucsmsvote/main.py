@@ -18,6 +18,7 @@ class Poll(db.Model):
 
 class Option(db.Model):
     oid         = db.StringProperty(required=True)
+    externalId  = db.IntegerProperty()
     name        = db.StringProperty(required=True)
     createdAt   = db.DateTimeProperty()
 
@@ -140,7 +141,16 @@ class OptionHandler(webapp.RequestHandler):
     def post(self):
         shortname   = self.request.get('shortname').lower()
         oid         = self.request.get('id').lower()
+        eid         = self.request.get('database_id')
         name        = self.request.get('name')
+
+        if oid.isdigit():
+            oid = str(int(oid))
+
+        if not eid:
+            eid = None
+        else:
+            eid = int(eid)
 
         poll = db.get(db.Key.from_path('Poll', shortname))
         if not poll:
@@ -154,7 +164,7 @@ class OptionHandler(webapp.RequestHandler):
             self.response.set_status(403)
             return
 
-        option = Option(oid=oid, name=name, createdAt=datetime.datetime.now(), parent=poll.key())
+        option = Option(oid=oid, externalId=eid, name=name, createdAt=datetime.datetime.now(), parent=poll.key())
         option.put()
 
         self.response.out.write(json.dumps({'status': 'ok'}))
