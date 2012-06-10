@@ -35,12 +35,12 @@ function getCosplayers() {
 function importCosplayers() {
     var brax = getCosplayers();
     $.each(brax, function(i,n) {
-        var name_string = n.user.firstname + n.user.lastname.substr(0,1) + ' som ' + n['name'];
+        var name_string = n.user.firstname + " " + n.user.lastname.substr(0,1) + ' som ' + n['name'];
         var params = {
             shortname: 'cosplay',
             id: n['index'],
             external_id: n['id'],
-            name: n['user']['firstname']
+            name: name_string,
         };
         $.post('/option', params, ajaxResponse, 'json');
     });
