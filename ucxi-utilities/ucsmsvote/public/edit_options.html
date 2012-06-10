@@ -21,7 +21,7 @@
 
 
 <script type="text/javascript" charset="utf-8">
-$.get('/option', function(d){
+$.get('/option', {'sortbyvotes': 1}, function(d){
     $.each(d, function(i, n){
         $.each(n, function(ii, nn) {
             var row = $('<tr>');

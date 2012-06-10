@@ -12,8 +12,10 @@ import logging
 
 
 class Poll(db.Model):
-    name        = db.StringProperty(required=True)
-    createdAt   = db.DateTimeProperty()
+    name            = db.StringProperty(required=True)
+    isClosed        = db.BooleanProperty()
+    singleVote      = db.BooleanProperty()
+    createdAt       = db.DateTimeProperty()
 
 
 class Option(db.Model):
@@ -53,23 +55,33 @@ class VoteHandler(webapp.RequestHandler):
         poll = db.get(db.Key.from_path('Poll', shortname))
         if not poll:
             reply = u'Jag tror du är på fel konvent. Hittar ingen tävling som kallas ' + shortname
+            logging.warning("Invalid shortname: " + shortname)
+            self.response.out.write(reply.encode('iso-8859-1'))
+            return
+
+        if poll.isClosed:
+            reply = u'Tyvärr, omröstningen för ' + poll.name + u' är stängd.'
+            logging.warning("Attempt to vote in closed poll " + shortname)
             self.response.out.write(reply.encode('iso-8859-1'))
             return
 
         option = Option.all().ancestor(poll).filter('oid =', oid).get()
         if not option:
-            reply = u'Hördu, det verkar inte finnas nåt bidrag som kallas ' + oid
+            reply = u'Nu skrev du nog fel, jag hittar inget bidrag som kallas ' + oid
+            logging.warning("Invalid option: " + oid + " (shortname: " + shortname + ")")
             self.response.out.write(reply.encode('iso-8859-1'))
             return
 
         vote = Vote.all().ancestor(poll).filter('phoneNumber =', phone).get()
-        if vote:
+        if vote and poll.singleVote:
             reply = u'Nä du, mig lurar du inte! Du har redan röstat i den här tävlingen!'
+            logging.warning("Attempt to vote more than once from number " + phone)
             self.response.out.write(reply.encode('iso-8859-1'))
             return
 
         vote = Vote(parent=option, phoneNumber=phone, createdAt=datetime.datetime.now())
         vote.put()
+        logging.info("vote in " + shortname + " for " + oid + " registered")
 
         reply = u'Tack för din röst på ' + option.name + u' i ' + poll.name + u'!'
         self.response.out.write(reply.encode('iso-8859-1'))
@@ -94,13 +106,19 @@ class PollHandler(webapp.RequestHandler):
             self.response.set_status(404)
             return
 
+        #lax = Poll.all()
+        #for p in lax:
+        #    p.isClosed=False
+        #    p.singleVote=False
+        #    p.put()
+
         poll = db.get(db.Key.from_path('Poll', shortname))
         if poll != None:
             self.response.out.write(json.dumps({'status': 'shortname already exists'}))
             self.response.set_status(403)
             return
 
-        poll = Poll(key_name=shortname, name=name, createdAt=datetime.datetime.now())
+        poll = Poll(key_name=shortname, isClosed=False, singleVote=False, name=name, createdAt=datetime.datetime.now())
         poll.put()
 
         self.response.out.write(json.dumps({'status': 'ok'}))
@@ -133,7 +151,12 @@ class OptionHandler(webapp.RequestHandler):
                 votes = Vote.all().ancestor(o).count()
                 options.append({'id': o.oid, 'name': o.name, 'votes': votes})
 
-            out[p.key().name()] = options if (not sort or sort == '0') else sorted(options, lambda opts: opts['votes'])
+            if not sort or sort == '0':
+                out[p.key().name()] = options
+            else:
+                sortedlist = sorted(options, key=lambda opts: opts['votes'])
+                sortedlist.reverse()
+                out[p.key().name()] = sortedlist
 
         self.response.out.write(json.dumps(out))
 
@@ -141,7 +164,7 @@ class OptionHandler(webapp.RequestHandler):
     def post(self):
         shortname   = self.request.get('shortname').lower()
         oid         = self.request.get('id').lower()
-        eid         = self.request.get('database_id')
+        eid         = self.request.get('external_id')
         name        = self.request.get('name')
 
         if oid.isdigit():
